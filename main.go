@@ -11,34 +11,24 @@ func main() {
 	argsWithoutProg := os.Args[1:]
 
 	content, err := ioutil.ReadFile(argsWithoutProg[0])
-	if err != nil {
-		panic(err)
-	}
+	checkError(err)
 
 	contentStr := string(content)
 	contentStr = strings.ReplaceAll(contentStr, "\r\n", "\n")
 
 	tempFile, err := ioutil.TempFile("", "winsh")
-	if err != nil {
-		panic(err)
-	}
+	checkError(err)
 
 	err = tempFile.Chmod(0700)
-	if err != nil {
-		panic(err)
-	}
+	checkError(err)
 
 	err = tempFile.Close()
-	if err != nil {
-		panic(err)
-	}
+	checkError(err)
 
 	ioutil.WriteFile(tempFile.Name(), []byte(contentStr), 0)
 
 	execPath, err := exec.LookPath(tempFile.Name())
-	if err != nil {
-		panic(err)
-	}
+	checkError(err)
 
 	cmd := &exec.Cmd{
 		Path:   execPath,
@@ -47,11 +37,15 @@ func main() {
 		Stderr: os.Stdout,
 	}
 
-	if err := cmd.Run(); err != nil {
-		panic(err)
-	}
+	err = cmd.Run()
+	checkError(err)
 
-	if err := os.Remove(tempFile.Name()); err != nil {
+	err = os.Remove(tempFile.Name())
+	checkError(err)
+}
+
+func checkError(err error) {
+	if err != nil {
 		panic(err)
 	}
 }
