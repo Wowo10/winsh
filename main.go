@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"io/ioutil"
 	"os"
 	"os/exec"
@@ -9,6 +10,14 @@ import (
 
 func main() {
 	argsWithoutProg := os.Args[1:]
+
+	if len(argsWithoutProg) == 0 || argsWithoutProg[0] == "help" || argsWithoutProg[0] == "--help" {
+		fmt.Println("winsh <script> <ARGS...>")
+		fmt.Println("")
+		fmt.Println("EXAMPLE: winsh sayMyName.sh wowo")
+
+		return
+	}
 
 	content, err := ioutil.ReadFile(argsWithoutProg[0])
 	checkError(err)
